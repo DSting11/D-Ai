@@ -2,141 +2,127 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
 <title>D-Ai</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:          #f9f9f7;
-  --white:       #ffffff;
-  --surface:     #f2f2ef;
-  --surface2:    #eaeae6;
-  --border:      #e0e0d8;
-  --border2:     #d0d0c8;
-  --text:        #111111;
-  --text2:       #666660;
-  --text3:       #aaa9a0;
-  --accent:      #111111;
-  --accent-inv:  #ffffff;
-  --blue:        #2563eb;
-  --green:       #16a34a;
-  --code-bg:     #f5f5f3;
-  --radius:      14px;
-  --canvas-w:    500px;
-
-  --shadow-sm:   0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md:   0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
-  --shadow-lg:   0 12px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
+  --bg:         #f9f9f7;
+  --white:      #ffffff;
+  --surface:    #f2f2ef;
+  --surface2:   #eaeae6;
+  --border:     #e0e0d8;
+  --border2:    #ccccc4;
+  --text:       #111111;
+  --text2:      #666660;
+  --text3:      #aaa9a0;
+  --accent:     #111111;
+  --inv:        #ffffff;
+  --blue:       #2563eb;
+  --green:      #16a34a;
+  --code-bg:    #f7f7f5;
+  --radius:     14px;
+  --canvas-w:   500px;
+  --sh-sm:      0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:      0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+  --sh-lg:      0 12px 40px rgba(0,0,0,.10),0 4px 12px rgba(0,0,0,.06);
 }
 
-html, body { height: 100%; overflow: hidden; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+body {
+  height: 100%;
+  height: -webkit-fill-available;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  /* Prevent bounce scroll on iOS */
+  position: fixed; width: 100%;
+}
 
-/* ============================
+/* ══════════════════════════════════════════
    NAME SCREEN
-   ============================ */
+══════════════════════════════════════════ */
 #name-screen {
   position: fixed; inset: 0; z-index: 999;
   background: var(--white);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 60px 16px 40px;
+  overflow-y: auto;
   transition: opacity .5s ease, transform .5s ease;
 }
-#name-screen.leaving {
-  opacity: 0;
-  transform: translateY(-18px);
-  pointer-events: none;
+@media (min-height: 600px) {
+  #name-screen { align-items: center; padding: 20px 16px; }
 }
-#name-screen.gone { display: none; }
+#name-screen.leaving { opacity: 0; transform: translateY(-16px); pointer-events: none; }
+#name-screen.gone    { display: none; }
 
 .welcome-wrap {
-  width: min(480px, 92vw);
+  width: min(460px, 92vw);
   display: flex; flex-direction: column; align-items: center;
-  gap: 0;
 }
 
-/* Big logo on welcome */
 .welcome-logo {
-  width: 72px; height: 72px;
-  background: var(--accent);
-  border-radius: 20px;
+  width: 76px; height: 76px;
+  background: var(--accent); border-radius: 22px;
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 28px;
-  box-shadow: var(--shadow-lg);
-  flex-shrink: 0;
+  margin-bottom: 30px;
+  box-shadow: var(--sh-lg);
 }
-.welcome-logo .d-letter {
+.d-letter {
   font-family: 'Playfair Display', serif;
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: var(--white);
+  font-weight: 700; color: var(--inv);
   display: inline-block;
   transform: rotate(12deg);
-  letter-spacing: -1px;
-  line-height: 1;
+  line-height: 1; user-select: none;
 }
+.welcome-logo .d-letter { font-size: 2.6rem; }
 
 .welcome-title {
   font-family: 'Playfair Display', serif;
-  font-size: 2.1rem; font-weight: 700;
-  letter-spacing: -.03em;
-  text-align: center;
-  margin-bottom: 8px;
-  color: var(--text);
+  font-size: 2rem; font-weight: 700; letter-spacing: -.03em;
+  text-align: center; margin-bottom: 10px;
 }
 .welcome-title em { font-style: italic; color: var(--text2); }
 
 .welcome-sub {
-  font-size: .9rem; color: var(--text2);
-  text-align: center; line-height: 1.65;
-  font-weight: 300; margin-bottom: 36px;
-  max-width: 340px;
+  font-size: .88rem; color: var(--text2); text-align: center;
+  line-height: 1.65; font-weight: 300; margin-bottom: 36px; max-width: 320px;
 }
 
-.name-form {
-  width: 100%;
-  display: flex; flex-direction: column; gap: 12px;
-}
+.name-form { width: 100%; display: flex; flex-direction: column; gap: 11px; }
 
 .name-label {
-  font-size: .75rem; font-weight: 600; letter-spacing: .08em;
+  font-size: .72rem; font-weight: 600; letter-spacing: .09em;
   text-transform: uppercase; color: var(--text3);
   font-family: 'DM Mono', monospace;
-  margin-bottom: -4px;
 }
 
-.name-input-wrap { position: relative; }
 .name-input-wrap input {
-  width: 100%;
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
+  width: 100%; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 12px;
   padding: 14px 18px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem; font-weight: 400;
-  color: var(--text);
-  outline: none;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem;
+  color: var(--text); outline: none;
   transition: border-color .2s, box-shadow .2s;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-sm);
 }
-.name-input-wrap input:focus {
-  border-color: var(--border2);
-  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
-}
+.name-input-wrap input:focus { border-color: var(--border2); box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
 .name-input-wrap input::placeholder { color: var(--text3); }
+.name-input-wrap input.error { border-color: #fca5a5; animation: shake .3s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
 .name-btn {
-  width: 100%;
-  background: var(--accent);
-  color: var(--accent-inv);
-  border: none; border-radius: 12px;
-  padding: 14px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: .92rem; font-weight: 600;
-  cursor: pointer;
-  letter-spacing: .01em;
+  width: 100%; background: var(--accent); color: var(--inv);
+  border: none; border-radius: 12px; padding: 14px;
+  font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 600;
+  cursor: pointer; letter-spacing: .01em;
   transition: opacity .2s, transform .15s, box-shadow .2s;
   box-shadow: 0 2px 12px rgba(0,0,0,.18);
 }
@@ -144,107 +130,85 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
 .name-btn:active { transform: scale(.98); }
 
 .name-note {
-  font-size: .72rem; color: var(--text3); text-align: center;
+  font-size: .7rem; color: var(--text3); text-align: center;
   font-family: 'DM Mono', monospace; letter-spacing: .02em;
 }
 
-/* ============================
-   APP LAYOUT
-   ============================ */
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
 #layout {
-  display: flex; height: 100vh; overflow: hidden;
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  height: -webkit-fill-available;
+  overflow: hidden;
 }
 
-/* CHAT SIDE */
 #chat-side {
   display: flex; flex-direction: column;
-  flex: 1; min-width: 0;
-  background: var(--white);
+  flex: 1; min-width: 0; background: var(--white);
 }
 
-/* CANVAS SIDE */
 #canvas-side {
   width: 0; overflow: hidden;
   transition: width .38s cubic-bezier(.4,0,.2,1);
   display: flex; flex-direction: column;
-  background: var(--bg);
-  border-left: 1px solid var(--border);
+  background: var(--bg); border-left: 1px solid var(--border);
   flex-shrink: 0;
 }
 #canvas-side.open { width: var(--canvas-w); }
 
-/* ============================
+/* ══════════════════════════════════════════
    TOPBAR
-   ============================ */
+══════════════════════════════════════════ */
 .topbar {
-  display: flex; align-items: center; gap: 14px;
-  padding: 0 22px;
-  height: 62px;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 13px;
+  padding: 0 20px; height: 60px;
+  background: var(--white); border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  box-shadow: 0 1px 0 var(--border);
 }
-
-/* small logo in topbar */
 .topbar-logo {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  width: 35px; height: 35px; background: var(--accent);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: var(--sh-sm);
 }
-.topbar-logo .d-letter {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem; font-weight: 700;
-  color: var(--white);
-  transform: rotate(12deg);
-  display: inline-block;
-  line-height: 1;
-}
-
+.topbar-logo .d-letter { font-size: 1.1rem; }
 .topbar-info { flex: 1; }
-.topbar-name  { font-weight: 600; font-size: .9rem; letter-spacing: -.01em; }
+.topbar-name   { font-weight: 600; font-size: .9rem; }
 .topbar-status {
-  font-size: .7rem; color: var(--green);
+  font-size: .68rem; color: var(--green);
   font-family: 'DM Mono', monospace;
-  display: flex; align-items: center; gap: 4px;
-  margin-top: 1px;
+  display: flex; align-items: center; gap: 5px; margin-top: 1px;
 }
 .topbar-status::before {
   content: ''; width: 6px; height: 6px; border-radius: 50%;
   background: var(--green); display: inline-block;
 }
-
 .topbar-user {
-  font-family: 'DM Mono', monospace;
-  font-size: .7rem; color: var(--text3);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--text3);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: 20px; padding: 4px 12px;
 }
 
-/* ============================
+/* ══════════════════════════════════════════
    CHAT AREA
-   ============================ */
+══════════════════════════════════════════ */
 #chat-area {
   flex: 1; overflow-y: auto;
-  padding: 24px 22px;
+  padding: 22px 20px;
   display: flex; flex-direction: column; gap: 6px;
-  scroll-behavior: smooth;
-  background: var(--white);
+  scroll-behavior: smooth; background: var(--white);
 }
 #chat-area::-webkit-scrollbar { width: 4px; }
 #chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-/* ============================
+/* ══════════════════════════════════════════
    MESSAGES
-   ============================ */
+══════════════════════════════════════════ */
 .msg-row {
-  display: flex; gap: 10px;
-  max-width: 80%;
-  animation: fadeUp .22s ease;
+  display: flex; gap: 10px; max-width: 80%;
+  animation: fadeUp .2s ease;
 }
 @keyframes fadeUp {
   from { transform: translateY(7px); opacity: 0; }
@@ -259,224 +223,224 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
   font-size: .62rem; font-weight: 700; flex-shrink: 0;
   align-self: flex-end; margin-bottom: 2px;
 }
-.msg-row.ai .msg-av {
-  background: var(--accent); color: var(--accent-inv);
-  font-family: 'Playfair Display', serif;
-  font-size: .75rem;
-}
-.msg-row.me .msg-av {
-  background: var(--surface); color: var(--text2);
-  border: 1px solid var(--border);
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-}
+.msg-row.ai .msg-av { background: var(--accent); }
+.msg-row.ai .msg-av .d-letter { font-size: .75rem; }
+.msg-row.me .msg-av { background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-family: 'DM Sans', sans-serif; }
 
 .bubble {
-  padding: 11px 15px;
-  border-radius: var(--radius);
-  font-size: .875rem; line-height: 1.68;
-  word-break: break-word; max-width: 100%;
-  position: relative;
+  padding: 11px 15px; border-radius: var(--radius);
+  font-size: .875rem; line-height: 1.7;
+  word-break: break-word; max-width: 100%; position: relative;
 }
-.msg-row.me .bubble {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-bottom-right-radius: 5px;
-  color: var(--text);
-}
-.msg-row.ai .bubble {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-bottom-left-radius: 5px;
-  box-shadow: var(--shadow-sm);
-  color: var(--text);
-}
+.msg-row.me .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-right-radius: 4px; }
+.msg-row.ai .bubble { background: var(--white); border: 1px solid var(--border); border-bottom-left-radius: 4px; box-shadow: var(--sh-sm); }
 
 .bubble .sender-lbl {
-  font-size: .62rem; color: var(--text3); letter-spacing: .06em;
+  font-size: .61rem; color: var(--text3); letter-spacing: .07em;
   text-transform: uppercase; font-family: 'DM Mono', monospace;
   margin-bottom: 6px; display: block;
 }
 .bubble .ts {
   display: block; text-align: right;
-  font-size: .62rem; color: var(--text3);
+  font-size: .61rem; color: var(--text3);
   margin-top: 7px; font-family: 'DM Mono', monospace;
 }
 
-/* ============================
+/* ══════════════════════════════════════════
    MARKDOWN BODY
-   ============================ */
+══════════════════════════════════════════ */
 .md-body { font-size: .875rem; line-height: 1.75; color: var(--text); }
 .md-body p { margin: 0 0 .7em; }
 .md-body p:last-child { margin-bottom: 0; }
-
 .md-body strong { font-weight: 700; color: #000; }
-.md-body em {
-  font-style: italic;
+.md-body em { font-style: italic; font-family: 'Playfair Display', serif; font-size: 1em; color: var(--text2); }
+
+.md-body h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 1em; color: var(--text2);
+  font-size: 1.18em; font-weight: 700;
+  margin: 1em 0 .35em; border-bottom: 1px solid var(--border); padding-bottom: 5px;
 }
+.md-body h2 { font-size: 1.02em; font-weight: 700; margin: .9em 0 .3em; }
+.md-body h3 { font-size: .9em; font-weight: 600; margin: .75em 0 .25em; color: var(--text2); }
 
-.md-body h1 { font-family: 'Playfair Display', serif; font-size: 1.2em; font-weight: 700; margin: 1em 0 .35em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-.md-body h2 { font-size: 1.02em; font-weight: 700; margin: .9em 0 .3em; letter-spacing: -.01em; }
-.md-body h3 { font-size: .9em; font-weight: 600; margin: .8em 0 .25em; color: var(--text2); }
-
-.md-body ul, .md-body ol { padding-left: 1.4em; margin: .35em 0 .7em; display: flex; flex-direction: column; gap: .25em; }
+.md-body ul, .md-body ol {
+  padding-left: 1.4em; margin: .3em 0 .7em;
+  display: flex; flex-direction: column; gap: .22em;
+}
 .md-body li { line-height: 1.65; }
 .md-body ul li::marker { color: var(--text3); }
 .md-body ol li::marker { font-family: 'DM Mono', monospace; font-size: .8em; color: var(--text3); }
-
-.md-body blockquote {
-  border-left: 3px solid var(--border2); padding-left: 14px;
-  margin: .6em 0; color: var(--text2); font-style: italic;
-}
+.md-body blockquote { border-left: 3px solid var(--border2); padding-left: 13px; margin: .6em 0; color: var(--text2); font-style: italic; }
 .md-body hr { border: none; border-top: 1px solid var(--border); margin: .8em 0; }
 .md-body a { color: var(--blue); text-decoration: none; }
 .md-body a:hover { text-decoration: underline; }
+.md-body table { width: 100%; border-collapse: collapse; margin: .6em 0; font-size: .83em; }
+.md-body th, .md-body td { border: 1px solid var(--border); padding: 6px 11px; }
+.md-body th { background: var(--surface); font-weight: 600; }
 
-.md-body code:not(.hljs) {
-  background: var(--surface);
+/* inline code — plain, no color */
+.md-body code {
+  background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 5px;
   padding: 1px 6px;
   font-family: 'DM Mono', monospace;
-  font-size: .82em; color: #b45309;
-  white-space: nowrap;
+  font-size: .82em;
+  color: var(--text);
 }
 
-/* Code block */
+/* ══════════════════════════════════════════
+   CODE BLOCK — PLAIN (no syntax colors)
+══════════════════════════════════════════ */
 .code-block-wrap {
   margin: .8em 0; border-radius: 11px;
   overflow: hidden; border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sh-sm);
 }
 .code-block-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 14px;
+  padding: 7px 14px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
 .code-lang {
-  font-family: 'DM Mono', monospace; font-size: .68rem;
-  color: var(--text2); text-transform: uppercase; letter-spacing: .07em;
+  font-family: 'DM Mono', monospace; font-size: .67rem;
+  color: var(--text2); text-transform: uppercase; letter-spacing: .08em;
 }
 .code-actions { display: flex; gap: 5px; }
 .code-btn {
   background: var(--white); border: 1px solid var(--border);
   border-radius: 6px; padding: 3px 10px;
-  font-family: 'DM Mono', monospace; font-size: .67rem;
+  font-family: 'DM Mono', monospace; font-size: .66rem;
   color: var(--text2); cursor: pointer;
-  transition: background .12s, border-color .12s, color .12s;
+  transition: background .12s, border-color .12s;
 }
 .code-btn:hover { background: var(--surface2); border-color: var(--border2); }
 .code-btn.open-canvas { color: var(--blue); border-color: #bfdbfe; }
 .code-btn.open-canvas:hover { background: #eff6ff; }
+
+/* Plain code — no colors, pure monospace */
 .code-block-wrap pre {
   margin: 0; padding: 14px 16px;
   overflow-x: auto;
-  font-family: 'DM Mono', monospace;
-  font-size: .8rem; line-height: 1.65;
-  background: var(--white) !important;
+  background: var(--code-bg);
 }
 .code-block-wrap pre code {
-  background: transparent !important;
-  border: none !important; padding: 0 !important;
-  font-size: inherit;
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem; line-height: 1.7;
+  color: var(--text);         /* semua teks sama warna */
+  background: transparent;
+  display: block;
+  white-space: pre;
+  word-break: normal;
+  tab-size: 2;
 }
 
-.md-body table { width: 100%; border-collapse: collapse; margin: .6em 0; font-size: .83em; }
-.md-body th, .md-body td { border: 1px solid var(--border); padding: 7px 12px; }
-.md-body th { background: var(--surface); font-weight: 600; }
+/* ══════════════════════════════════════════
+   STREAMING / TYPEWRITER
+══════════════════════════════════════════ */
+.stream-cursor {
+  display: inline-block;
+  width: 2px; height: 1em;
+  background: var(--text2);
+  border-radius: 1px;
+  vertical-align: text-bottom;
+  animation: blink .7s step-end infinite;
+  margin-left: 1px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-/* ============================
-   TYPING
-   ============================ */
+/* ══════════════════════════════════════════
+   TYPING INDICATOR
+══════════════════════════════════════════ */
 .typing-bubble { display: flex; gap: 5px; align-items: center; padding: 12px 16px; }
-.typing-bubble span { width: 5px; height: 5px; border-radius: 50%; background: var(--text3); animation: tb 1.3s infinite; }
+.typing-bubble span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text3); animation: tb 1.3s infinite;
+}
 .typing-bubble span:nth-child(2) { animation-delay: .17s; }
 .typing-bubble span:nth-child(3) { animation-delay: .34s; }
-@keyframes tb { 0%,80%,100% { transform: translateY(0); opacity:.4; } 40% { transform: translateY(-5px); opacity:1; } }
+@keyframes tb { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-5px);opacity:1} }
 
-/* DATE DIVIDER */
+/* DIVIDER & SYSTEM */
 .date-divider {
-  text-align: center; font-size: .62rem; color: var(--text3);
+  text-align: center; font-size: .61rem; color: var(--text3);
   font-family: 'DM Mono', monospace; padding: 2px 0; position: relative; margin: 4px 0;
 }
-.date-divider::before, .date-divider::after { content: ''; position: absolute; top: 50%; width: 36%; height: 1px; background: var(--border); }
-.date-divider::before { left: 0; }
-.date-divider::after  { right: 0; }
+.date-divider::before, .date-divider::after {
+  content: ''; position: absolute; top: 50%; width: 36%; height: 1px; background: var(--border);
+}
+.date-divider::before { left: 0; } .date-divider::after { right: 0; }
 
-/* SYSTEM MSG */
 .sys-msg {
-  align-self: center; font-size: .68rem; color: var(--text3);
+  align-self: center; font-size: .67rem; color: var(--text3);
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 20px; padding: 4px 14px;
-  font-family: 'DM Mono', monospace; text-align: center;
-  max-width: 90%; margin: 3px 0;
+  font-family: 'DM Mono', monospace; text-align: center; max-width: 90%; margin: 3px 0;
 }
 
-/* ============================
+/* ══════════════════════════════════════════
    INPUT AREA
-   ============================ */
+══════════════════════════════════════════ */
 .input-area {
-  padding: 14px 18px; background: var(--white);
+  padding: 13px 16px;
+  padding-bottom: max(13px, env(safe-area-inset-bottom));
+  background: var(--white);
   border-top: 1px solid var(--border);
-  display: flex; align-items: flex-end; gap: 10px; flex-shrink: 0;
+  display: flex; align-items: flex-end; gap: 10px;
+  flex-shrink: 0;
+  position: sticky; bottom: 0;
+  z-index: 10;
 }
 #msg-input {
   flex: 1; background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 24px; padding: 11px 18px;
-  color: var(--text); font-family: 'DM Sans', sans-serif;
-  font-size: .9rem; resize: none; outline: none;
-  max-height: 140px; overflow-y: auto; line-height: 1.55;
-  transition: border-color .2s, box-shadow .2s;
+  border: 1.5px solid var(--border); border-radius: 24px;
+  padding: 11px 18px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: .9rem;
+  resize: none; outline: none; max-height: 140px;
+  overflow-y: auto; line-height: 1.55;
+  transition: border-color .2s, box-shadow .2s, background .2s;
 }
-#msg-input:focus {
-  border-color: var(--border2);
-  background: var(--white);
-  box-shadow: 0 0 0 3px rgba(0,0,0,.05);
-}
+#msg-input:focus { border-color: var(--border2); background: var(--white); box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
 #msg-input::placeholder { color: var(--text3); }
 #msg-input::-webkit-scrollbar { width: 3px; }
+#msg-input:disabled { opacity: .5; cursor: not-allowed; }
 
 #send-btn {
-  width: 40px; height: 40px; background: var(--accent);
-  border: none; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; background: var(--accent); border: none; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: transform .15s, opacity .15s, box-shadow .15s;
   box-shadow: 0 2px 8px rgba(0,0,0,.18);
 }
 #send-btn:hover  { opacity: .85; box-shadow: 0 4px 14px rgba(0,0,0,.22); }
 #send-btn:active { transform: scale(.93); }
+#send-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 #send-btn svg { width: 16px; height: 16px; }
 
-/* ============================
+/* ══════════════════════════════════════════
    CANVAS PANEL
-   ============================ */
+══════════════════════════════════════════ */
 .canvas-topbar {
   display: flex; align-items: center; gap: 10px;
-  padding: 0 16px; height: 62px;
-  background: var(--white); border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  padding: 0 16px; height: 60px;
+  background: var(--white); border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
 .canvas-title {
-  flex: 1; font-size: .82rem; font-weight: 500;
+  flex: 1; font-size: .8rem; font-weight: 500;
   font-family: 'DM Mono', monospace; color: var(--text2);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .canvas-lang-badge {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; padding: 2px 8px;
-  font-family: 'DM Mono', monospace; font-size: .63rem;
+  font-family: 'DM Mono', monospace; font-size: .62rem;
   color: var(--blue); text-transform: uppercase; letter-spacing: .06em;
 }
 .canvas-close {
   width: 28px; height: 28px; border-radius: 8px;
   background: var(--surface); border: 1px solid var(--border);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: var(--text2); font-size: .85rem; flex-shrink: 0;
-  transition: background .15s;
+  color: var(--text2); font-size: .85rem; flex-shrink: 0; transition: background .14s;
 }
 .canvas-close:hover { background: var(--surface2); color: var(--text); }
 
@@ -489,78 +453,66 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
 .canvas-tab {
   background: transparent; border: 1px solid transparent;
   border-radius: 7px; padding: 4px 12px;
-  font-family: 'DM Mono', monospace; font-size: .68rem;
-  color: var(--text3); cursor: pointer; transition: all .14s;
+  font-family: 'DM Mono', monospace; font-size: .67rem;
+  color: var(--text3); cursor: pointer; transition: all .13s;
 }
-.canvas-tab.active { background: var(--white); border-color: var(--border); color: var(--text); box-shadow: var(--shadow-sm); }
+.canvas-tab.active { background: var(--white); border-color: var(--border); color: var(--text); box-shadow: var(--sh-sm); }
 
 .canvas-tool-btn {
   display: flex; align-items: center; gap: 5px;
   background: var(--white); border: 1px solid var(--border);
   border-radius: 7px; padding: 5px 12px;
-  font-family: 'DM Mono', monospace; font-size: .68rem;
-  color: var(--text2); cursor: pointer;
-  transition: background .14s;
-  box-shadow: var(--shadow-sm);
+  font-family: 'DM Mono', monospace; font-size: .67rem;
+  color: var(--text2); cursor: pointer; transition: background .13s; box-shadow: var(--sh-sm);
 }
 .canvas-tool-btn:hover { background: var(--surface); }
 .canvas-tool-btn svg { width: 11px; height: 11px; }
-.copy-success { color: var(--green) !important; }
+.copy-ok { color: var(--green) !important; }
 
+/* Canvas code — plain, no colors */
 #canvas-content { flex: 1; overflow: auto; padding: 20px; }
 #canvas-content::-webkit-scrollbar { width: 4px; }
 #canvas-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
 #canvas-pre {
   margin: 0; font-family: 'DM Mono', monospace;
   font-size: .8rem; line-height: 1.7;
-  background: transparent !important;
   white-space: pre; overflow-x: auto;
+  color: var(--text); background: transparent;
 }
-#canvas-pre code { background: transparent !important; font-size: inherit; padding: 0 !important; border: none !important; }
 #canvas-preview { flex: 1; border: none; width: 100%; display: none; background: #fff; }
 
-/* ============================
+/* ══════════════════════════════════════════
    RESPONSIVE
-   ============================ */
+══════════════════════════════════════════ */
 @media (max-width: 860px) {
   #canvas-side.open { width: 100%; position: fixed; inset: 0; z-index: 200; }
-  :root { --canvas-w: 100vw; }
 }
-@media (max-width: 580px) {
-  .msg-row { max-width: 92%; }
-  .topbar  { padding: 0 14px; }
-  #chat-area { padding: 16px 14px; }
-  .input-area { padding: 10px 12px; }
+@media (max-width: 560px) {
+  .msg-row { max-width: 94%; }
+  .topbar, #chat-area, .input-area { padding-left: 14px; padding-right: 14px; }
 }
 </style>
 </head>
 <body>
 
-<!-- =================== NAME SCREEN =================== -->
+<!-- ═══════════ NAME SCREEN ═══════════ -->
 <div id="name-screen">
   <div class="welcome-wrap">
-
-    <div class="welcome-logo">
-      <span class="d-letter">D</span>
-    </div>
-
+    <div class="welcome-logo"><span class="d-letter">D</span></div>
     <h1 class="welcome-title">Selamat Datang di<br><em>D-Ai</em></h1>
-    <p class="welcome-sub">AI yang cerdas, bebas, dan selalu siap membantu.<br>Perkenalkan dirimu sebelum mulai.</p>
-
+    <p class="welcome-sub">AI yang cerdas dan bebas, siap membantu kamu kapanpun.<br>Perkenalkan namamu sebelum mulai.</p>
     <div class="name-form">
       <span class="name-label">Nama kamu</span>
       <div class="name-input-wrap">
         <input type="text" id="name-input" placeholder="Ketik namamu di sini..." maxlength="40" autocomplete="off"/>
       </div>
       <button class="name-btn" id="name-submit">Mulai Ngobrol →</button>
-      <p class="name-note">Namamu disimpan secara lokal &amp; tidak bisa diubah setelahnya.</p>
+      <p class="name-note">Namamu disimpan lokal &amp; tidak bisa diubah setelahnya.</p>
     </div>
-
   </div>
 </div>
 
-<!-- =================== APP =================== -->
+<!-- ═══════════ APP ═══════════ -->
 <div id="layout">
 
   <!-- CHAT -->
@@ -573,17 +525,14 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
       </div>
       <div class="topbar-user" id="user-tag">—</div>
     </div>
-
     <div id="chat-area">
       <div class="date-divider">HARI INI</div>
     </div>
-
     <div class="input-area">
       <textarea id="msg-input" rows="1" placeholder="Tulis pesan kepada D-Ai..."></textarea>
       <button id="send-btn" title="Kirim">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
     </div>
@@ -598,8 +547,8 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
     </div>
     <div class="canvas-toolbar">
       <div class="canvas-tabs">
-        <button class="canvas-tab active" id="tab-code" onclick="switchTab('code')">Code</button>
-        <button class="canvas-tab" id="tab-preview" onclick="switchTab('preview')">Preview</button>
+        <button class="canvas-tab active" id="tab-code"    onclick="switchTab('code')">Code</button>
+        <button class="canvas-tab"        id="tab-preview" onclick="switchTab('preview')">Preview</button>
       </div>
       <div style="flex:1"></div>
       <button class="canvas-tool-btn" id="copy-btn" onclick="copyCanvas()">
@@ -610,25 +559,25 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
         Copy
       </button>
     </div>
-    <div id="canvas-content"><pre id="canvas-pre"><code id="canvas-code"></code></pre></div>
+    <div id="canvas-content"><pre id="canvas-pre"></pre></div>
     <iframe id="canvas-preview" sandbox="allow-scripts"></iframe>
   </div>
 
 </div>
 
 <script>
-// ================================================================
-//  KONFIGURASI — isi sebelum dibagikan
-// ================================================================
-// Token HF TIDAK ada di sini — tersimpan aman di Cloudflare Worker
-const WORKER_URL          = "https://tight-dawn-e5d0.javas-muchie.workers.dev/";  // ← isi URL worker kamu
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1476429779279286423/vXcv1FXigQeCE1Aw8vf0aiT4gp47GorDNdnIp2u1JCRKu6y8Bv8Y2LKUq25_kWcDu7nO"
-// ================================================================
+// ═══════════════════════════════════════════════════
+//  KONFIGURASI
+// ═══════════════════════════════════════════════════
+const WORKER_URL          = "https://tight-dawn-e5d0.javas-muchie.workers.dev/";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1476429779279286423/vXcv1FXigQeCE1Aw8vf0aiT4gp47GorDNdnIp2u1JCRKu6y8Bv8Y2LKUq25_kWcDu7nO";
+// ═══════════════════════════════════════════════════
+
 const STORAGE_KEY = "d_ai_username";
+let username      = localStorage.getItem(STORAGE_KEY);
+let isGenerating  = false;
 
-// ── USERNAME ─────────────────────────────────────────────────────
-let username = localStorage.getItem(STORAGE_KEY);
-
+// ── NAME SCREEN ─────────────────────────────────────────────
 const nameScreen = document.getElementById("name-screen");
 const nameInput  = document.getElementById("name-input");
 const nameBtn    = document.getElementById("name-submit");
@@ -644,14 +593,14 @@ function applyUsername(name, animate) {
     nameScreen.classList.add("gone");
   }
   if (WORKER_URL.includes("GANTI-DENGAN")) {
-    setTimeout(() => addSysMsg("⚠️ WORKER_URL belum diisi! Isi URL Cloudflare Worker kamu di kode HTML."), 700);
+    setTimeout(() => addSysMsg("⚠️ WORKER_URL belum diisi! Isi URL Cloudflare Worker kamu di bagian atas kode."), 700);
   }
 }
 
 if (username) {
   applyUsername(username, false);
 } else {
-  setTimeout(() => nameInput.focus(), 200);
+  setTimeout(() => nameInput.focus(), 180);
 }
 
 nameBtn.addEventListener("click", saveName);
@@ -660,8 +609,8 @@ nameInput.addEventListener("keydown", e => { if (e.key === "Enter") saveName(); 
 function saveName() {
   const val = nameInput.value.trim();
   if (!val) {
-    nameInput.style.borderColor = "#f87171";
-    setTimeout(() => nameInput.style.borderColor = "", 1000);
+    nameInput.classList.add("error");
+    setTimeout(() => nameInput.classList.remove("error"), 600);
     return;
   }
   localStorage.setItem(STORAGE_KEY, val);
@@ -669,8 +618,10 @@ function saveName() {
   setTimeout(() => addSysMsg("Hai, " + val + "! Selamat datang di D-Ai 👋"), 600);
 }
 
-// ── HELPERS ──────────────────────────────────────────────────────
+// ── HELPERS ─────────────────────────────────────────────────
 const chatArea = document.getElementById("chat-area");
+const msgInput = document.getElementById("msg-input");
+const sendBtn  = document.getElementById("send-btn");
 
 function nowStr() {
   return new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
@@ -679,13 +630,17 @@ function scrollBottom() { chatArea.scrollTop = chatArea.scrollHeight; }
 
 function addSysMsg(text) {
   const el = document.createElement("div");
-  el.className = "sys-msg";
-  el.textContent = text;
-  chatArea.appendChild(el);
-  scrollBottom();
+  el.className = "sys-msg"; el.textContent = text;
+  chatArea.appendChild(el); scrollBottom();
 }
 
-// ── MARKDOWN RENDERER ────────────────────────────────────────────
+function setGenerating(val) {
+  isGenerating = val;
+  msgInput.disabled = val;
+  sendBtn.disabled  = val;
+}
+
+// ── MARKDOWN RENDERER ────────────────────────────────────────
 window.__codeBlocks = [];
 
 function renderMarkdown(raw) {
@@ -693,50 +648,52 @@ function renderMarkdown(raw) {
   const blocks = [];
   let t = raw;
 
-  // Extract fenced code
+  // Extract fenced code blocks
   t = t.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const idx = blocks.length;
-    const l = lang.trim() || "plaintext";
+    const l   = lang.trim() || "text";
     blocks.push({ lang: l, code: code.trimEnd() });
     window.__codeBlocks.push({ lang: l, code: code.trimEnd() });
     return `%%CB_${idx}%%`;
   });
 
-  // Escape
+  // Escape HTML
   t = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
   // Headers
-  t = t.replace(/^### (.+)$/gm,"<h3>$1</h3>");
-  t = t.replace(/^## (.+)$/gm, "<h2>$1</h2>");
-  t = t.replace(/^# (.+)$/gm,  "<h1>$1</h1>");
+  t = t.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+  t = t.replace(/^## (.+)$/gm,  "<h2>$1</h2>");
+  t = t.replace(/^# (.+)$/gm,   "<h1>$1</h1>");
 
-  // Bold/italic
-  t = t.replace(/\*\*\*(.+?)\*\*\*/g,"<strong><em>$1</em></strong>");
-  t = t.replace(/\*\*(.+?)\*\*/g,    "<strong>$1</strong>");
-  t = t.replace(/\*(.+?)\*/g,        "<em>$1</em>");
-  t = t.replace(/_(.+?)_/g,          "<em>$1</em>");
+  // Bold / italic
+  t = t.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  t = t.replace(/\*\*(.+?)\*\*/g,     "<strong>$1</strong>");
+  t = t.replace(/\*(.+?)\*/g,         "<em>$1</em>");
+  t = t.replace(/_(.+?)_/g,           "<em>$1</em>");
 
   // HR
-  t = t.replace(/^---+$/gm,"<hr>");
+  t = t.replace(/^---+$/gm, "<hr>");
 
   // Blockquote
-  t = t.replace(/^&gt; (.+)$/gm,"<blockquote>$1</blockquote>");
+  t = t.replace(/^&gt; (.+)$/gm, "<blockquote>$1</blockquote>");
 
-  // Lists
+  // Unordered list
   t = t.replace(/((?:^[-*+] .+\n?)+)/gm, m => {
     const items = m.trim().split("\n").map(l => "<li>" + l.replace(/^[-*+] /,"") + "</li>").join("");
     return "<ul>" + items + "</ul>\n";
   });
+
+  // Ordered list
   t = t.replace(/((?:^\d+\. .+\n?)+)/gm, m => {
     const items = m.trim().split("\n").map(l => "<li>" + l.replace(/^\d+\. /,"") + "</li>").join("");
     return "<ol>" + items + "</ol>\n";
   });
 
-  // Inline code
-  t = t.replace(/`([^`]+)`/g,"<code>$1</code>");
+  // Inline code (before link)
+  t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
 
   // Links
-  t = t.replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank">$1</a>');
+  t = t.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
 
   // Paragraphs
   t = t.split("\n\n").map(block => {
@@ -746,13 +703,12 @@ function renderMarkdown(raw) {
     return "<p>" + tr.replace(/\n/g,"<br>") + "</p>";
   }).join("\n");
 
-  // Restore code blocks
+  // Restore code blocks — plain, no syntax colors
   t = t.replace(/%%CB_(\d+)%%/g, (_, idx) => {
     const {lang, code} = blocks[idx];
+    // Escape HTML inside code — plain text, no highlighting
     const esc = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    const hi  = hljs.getLanguage(lang)
-      ? hljs.highlight(code, {language: lang, ignoreIllegals: true}).value
-      : hljs.highlightAuto(code).value;
+    const ext = {javascript:"js",python:"py",html:"html",css:"css",java:"java",typescript:"ts",cpp:"cpp",bash:"sh",sql:"sql",go:"go",rust:"rs"};
     const canBtn = `<button class="code-btn open-canvas" onclick="openCanvas(${idx})">⬡ Canvas</button>`;
     const cpBtn  = `<button class="code-btn" onclick="copyCode(this,'${encodeURIComponent(code)}')">Copy</button>`;
     return `<div class="code-block-wrap">
@@ -760,7 +716,7 @@ function renderMarkdown(raw) {
         <span class="code-lang">${lang}</span>
         <div class="code-actions">${cpBtn}${canBtn}</div>
       </div>
-      <pre><code class="language-${lang} hljs">${hi}</code></pre>
+      <pre><code>${esc}</code></pre>
     </div>`;
   });
 
@@ -770,20 +726,25 @@ function renderMarkdown(raw) {
 function copyCode(btn, enc) {
   navigator.clipboard.writeText(decodeURIComponent(enc)).then(() => {
     btn.textContent = "✓ Copied";
-    btn.classList.add("copy-success");
-    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copy-success"); }, 1800);
+    btn.classList.add("copy-ok");
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copy-ok"); }, 1800);
   });
 }
 
-// ── BUBBLES ──────────────────────────────────────────────────────
-function addBubble(role, text) {
+// ── BUBBLES ──────────────────────────────────────────────────
+function createBubble(role) {
   const row = document.createElement("div");
   row.className = "msg-row " + (role === "user" ? "me" : "ai");
 
   const av = document.createElement("div");
   av.className = "msg-av";
-  if (role === "ai") { av.textContent = "D"; }
-  else { av.textContent = (username ? username[0].toUpperCase() : "U"); }
+  if (role === "ai") {
+    const d = document.createElement("span");
+    d.className = "d-letter"; d.textContent = "D"; d.style.fontSize = ".75rem";
+    av.appendChild(d);
+  } else {
+    av.textContent = username ? username[0].toUpperCase() : "U";
+  }
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
@@ -793,47 +754,232 @@ function addBubble(role, text) {
   lbl.textContent = role === "user" ? (username || "Kamu") : "D-Ai";
   bubble.appendChild(lbl);
 
-  if (role === "ai") {
-    const body = document.createElement("div");
-    body.className = "md-body";
-    body.innerHTML = renderMarkdown(text);
-    bubble.appendChild(body);
-  } else {
-    const cnt = document.createElement("span");
-    cnt.textContent = text;
-    bubble.appendChild(cnt);
-  }
+  const content = document.createElement("div");
+  content.className = role === "ai" ? "md-body" : "";
+  bubble.appendChild(content);
 
   const ts = document.createElement("span");
-  ts.className = "ts";
-  ts.textContent = nowStr();
+  ts.className = "ts"; ts.textContent = nowStr();
   bubble.appendChild(ts);
 
-  row.appendChild(av);
-  row.appendChild(bubble);
-  chatArea.appendChild(row);
-  scrollBottom();
-}
-
-function showTyping() {
-  const row = document.createElement("div");
-  row.className = "msg-row ai"; row.id = "typing-row";
-  const av = document.createElement("div"); av.className = "msg-av"; av.textContent = "D";
-  const bub = document.createElement("div"); bub.className = "bubble typing-bubble";
-  bub.innerHTML = "<span></span><span></span><span></span>";
-  row.appendChild(av); row.appendChild(bub);
+  row.appendChild(av); row.appendChild(bubble);
   chatArea.appendChild(row); scrollBottom();
+  return { row, content, ts };
 }
-function removeTyping() { const el = document.getElementById("typing-row"); if (el) el.remove(); }
 
-// ── CANVAS ───────────────────────────────────────────────────────
+function addUserBubble(text) {
+  const { content } = createBubble("user");
+  content.textContent = text;
+}
+
+// ── STREAMING TYPEWRITER ─────────────────────────────────────
+async function streamAI(userMsg) {
+  const history_msgs = buildMessages(userMsg);
+
+  // Create empty AI bubble
+  const { content: contentEl } = createBubble("ai");
+
+  // Cursor
+  const cursor = document.createElement("span");
+  cursor.className = "stream-cursor";
+  contentEl.appendChild(cursor);
+
+  let fullText    = "";
+  let charQueue   = [];
+  let streamDone  = false;
+  let animDone    = false;
+
+  // ─ Character animation pump ─
+  const CHAR_DELAY = 12; // ms per char
+  function pumpChars() {
+    if (charQueue.length === 0) {
+      if (streamDone) {
+        // Stream finished AND queue empty → finalize
+        cursor.remove();
+        contentEl.innerHTML = renderMarkdown(fullText);
+        animDone = true;
+        return;
+      }
+      // Queue empty but stream not done → wait
+      setTimeout(pumpChars, 20);
+      return;
+    }
+    const ch = charQueue.shift();
+    fullText += ch;
+    // Update text node before cursor
+    let textNode = contentEl.firstChild;
+    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+      textNode = document.createTextNode("");
+      contentEl.insertBefore(textNode, cursor);
+    }
+    textNode.textContent = fullText;
+    scrollBottom();
+    setTimeout(pumpChars, CHAR_DELAY);
+  }
+
+  // Start pump
+  pumpChars();
+
+  // ─ Fetch streaming SSE ─
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages:    history_msgs,
+        max_tokens:  900,
+        temperature: 0.7,
+        stream:      true
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      charQueue.push(...("❌ Error " + res.status + ": " + err.slice(0,200)).split(""));
+      streamDone = true;
+      return fullText;
+    }
+
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let   buffer  = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop(); // keep incomplete line
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") { streamDone = true; break; }
+        try {
+          const json  = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content || "";
+          if (delta) charQueue.push(...delta.split(""));
+        } catch { /* skip malformed */ }
+      }
+      if (streamDone) break;
+    }
+
+  } catch (e) {
+    const errMsg = e instanceof TypeError
+      ? "❌ CORS Error: Buka via Live Server, bukan double-click file HTML."
+      : "❌ " + e.message;
+    charQueue.push(...errMsg.split(""));
+  }
+
+  streamDone = true;
+
+  // Wait for animation to finish
+  await new Promise(resolve => {
+    const check = setInterval(() => {
+      if (animDone) { clearInterval(check); resolve(); }
+    }, 30);
+  });
+
+  return fullText;
+}
+
+// ── CONVERSATION HISTORY ─────────────────────────────────────
+const history = [];
+
+function buildMessages(userMsg) {
+  history.push({ role: "user", content: userMsg });
+  return [
+    {
+      role: "system",
+      content:
+        "Kamu adalah D-Ai, AI chat yang cerdas, jujur, dan bebas. " +
+        "Nama pengguna yang chat denganmu adalah \"" + (username || "pengguna") + "\". " +
+        "Jawab dalam bahasa yang sama dengan pengguna. Tidak ada batasan topik.\n\n" +
+        "Identitasmu: Kamu bernama D-Ai. " +
+        "Kamu diintegrasikan dan dipasang ke website ini oleh seseorang bernama Danis. " +
+        "Kalau ada yang bertanya siapa yang buat kamu, model apa kamu, dsb — jawab dengan bangga: " +
+        "kamu adalah D-Ai, ditenagai model GLM-5, dan website ini dibangun oleh Danis.\n\n" +
+        "Format respons dengan Markdown: **bold** untuk poin penting, ## untuk heading, " +
+        "list untuk langkah-langkah, dan fenced code block dengan nama bahasa (```python, ```js, dll) " +
+        "untuk SEMUA kode. Tulis ringkas dan padat, hindari bertele-tele."
+    },
+    ...history
+  ];
+}
+
+// ── DISCORD ──────────────────────────────────────────────────
+async function sendToDiscord(userMsg, aiReply) {
+  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("XXX/XXX")) return;
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: "**[D-Ai Log]**\n👤 **" + (username||"?") + "** : " + userMsg +
+                 "\n🤖 **D-Ai** : " + aiReply.slice(0, 1800)
+      })
+    });
+  } catch(e) { console.warn("Discord:", e); }
+}
+
+// ── SEND ─────────────────────────────────────────────────────
+async function sendMessage() {
+  const text = msgInput.value.trim();
+  if (!text || !username || isGenerating) return;
+
+  msgInput.value = "";
+  msgInput.style.height = "auto";
+  setGenerating(true);
+
+  addUserBubble(text);
+
+  const aiReply = await streamAI(text);
+  history.push({ role: "assistant", content: aiReply });
+
+  setGenerating(false);
+  sendToDiscord(text, aiReply);
+}
+
+sendBtn.addEventListener("click", sendMessage);
+msgInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+msgInput.addEventListener("input", () => {
+  msgInput.style.height = "auto";
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 140) + "px";
+});
+
+// ── MOBILE VIEWPORT FIX ─────────────────────────────────────
+// Saat keyboard muncul di mobile, resize layout agar input tetap terlihat
+function fixViewport() {
+  const layout = document.getElementById("layout");
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", () => {
+      const h = window.visualViewport.height;
+      layout.style.height = h + "px";
+      document.body.style.height = h + "px";
+      scrollBottom();
+    });
+    window.visualViewport.addEventListener("scroll", scrollBottom);
+  } else {
+    // Fallback: listen to window resize
+    window.addEventListener("resize", () => {
+      layout.style.height = window.innerHeight + "px";
+      scrollBottom();
+    });
+  }
+}
+fixViewport();
+
+// ── CANVAS ───────────────────────────────────────────────────
 const canvasSide    = document.getElementById("canvas-side");
 const canvasTitleEl = document.getElementById("canvas-title");
 const canvasLangEl  = document.getElementById("canvas-lang");
-const canvasCodeEl  = document.getElementById("canvas-code");
+const canvasPreEl   = document.getElementById("canvas-pre");
 const canvasPreview = document.getElementById("canvas-preview");
-let currentCode = "";
-let currentLang = "";
+let currentCode = "", currentLang = "";
 
 function openCanvas(idx) {
   const block = (window.__codeBlocks || [])[idx];
@@ -841,15 +987,12 @@ function openCanvas(idx) {
   currentCode = block.code;
   currentLang = block.lang;
 
-  const extMap = { javascript:"js", python:"py", html:"html", css:"css", java:"java", typescript:"ts", cpp:"cpp", bash:"sh", sql:"sql", go:"go", rust:"rs" };
+  const extMap = {javascript:"js",python:"py",html:"html",css:"css",java:"java",typescript:"ts",cpp:"cpp",bash:"sh",sql:"sql",go:"go",rust:"rs"};
   canvasTitleEl.textContent = "code." + (extMap[block.lang.toLowerCase()] || block.lang || "txt");
   canvasLangEl.textContent  = (block.lang || "code").toUpperCase();
 
-  const hi = hljs.getLanguage(block.lang)
-    ? hljs.highlight(block.code, {language: block.lang, ignoreIllegals: true}).value
-    : hljs.highlightAuto(block.code).value;
-  canvasCodeEl.innerHTML = hi;
-  canvasCodeEl.className = "language-" + block.lang + " hljs";
+  // Plain text — no syntax coloring
+  canvasPreEl.textContent = block.code;
 
   const isPreview = ["html","svg"].includes(block.lang.toLowerCase());
   document.getElementById("tab-preview").style.display = isPreview ? "" : "none";
@@ -860,14 +1003,15 @@ function openCanvas(idx) {
 document.getElementById("canvas-close-btn").addEventListener("click", () => canvasSide.classList.remove("open"));
 
 function switchTab(tab) {
-  document.getElementById("tab-code").classList.toggle("active", tab === "code");
+  document.getElementById("tab-code").classList.toggle("active",    tab === "code");
   document.getElementById("tab-preview").classList.toggle("active", tab === "preview");
   if (tab === "code") {
     document.getElementById("canvas-content").style.display = "";
     canvasPreview.style.display = "none";
   } else {
     document.getElementById("canvas-content").style.display = "none";
-    canvasPreview.style.display = ""; canvasPreview.srcdoc = currentCode;
+    canvasPreview.style.display = "";
+    canvasPreview.srcdoc = currentCode;
   }
 }
 
@@ -875,78 +1019,10 @@ function copyCanvas() {
   navigator.clipboard.writeText(currentCode).then(() => {
     const btn = document.getElementById("copy-btn");
     btn.innerHTML = btn.innerHTML.replace("Copy","✓ Copied");
-    btn.classList.add("copy-success");
-    setTimeout(() => { btn.innerHTML = btn.innerHTML.replace("✓ Copied","Copy"); btn.classList.remove("copy-success"); }, 1800);
+    btn.classList.add("copy-ok");
+    setTimeout(() => { btn.innerHTML = btn.innerHTML.replace("✓ Copied","Copy"); btn.classList.remove("copy-ok"); }, 1800);
   });
 }
-
-// ── DISCORD ──────────────────────────────────────────────────────
-async function sendToDiscord(userMsg, aiReply) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("XXX/XXX")) return;
-  try {
-    await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: "**[D-Ai Log]**\n👤 **Input pengguna (" + (username||"?") + ")** : " + userMsg + "\n🤖 **Balasan ai** : " + aiReply.slice(0,1800) })
-    });
-  } catch(e) { console.warn("Discord:", e); }
-}
-
-// ── AI ───────────────────────────────────────────────────────────
-const history = [];
-
-async function askAI(userMsg) {
-  history.push({ role: "user", content: userMsg });
-  const msgs = [
-    { role: "system", content: "Kamu adalah D-Ai, AI chat yang cerdas, jujur, dan bebas. Nama pengguna yang chat denganmu adalah \"" + (username||"pengguna") + "\". Jawab dalam bahasa yang sama dengan pengguna. Tidak ada batasan topik.\n\nIdentitasmu yang WAJIB kamu ingat: Namamu adalah D-Ai. Kamu diintegrasikan dan dipasang ke website ini oleh seseorang bernama Danis — dialah yang membangun website D-Ai ini. Jika ada yang bertanya seputar \"siapa yang buat kamu\", \"siapa developermu\", \"kamu model apa\", \"siapa penciptamu\", atau pertanyaan serupa — jawab dengan jelas dan bangga: kamu adalah D-Ai, ditenagai model GLM-5, dan website ini dibangun oleh Danis.\n\nFormat semua respons dengan Markdown: gunakan **bold** untuk poin penting, ## untuk heading bagian besar, list untuk langkah-langkah, dan fenced code block (dengan nama bahasa) untuk semua kode. Tulis ringkas dan tidak bertele-tele." },
-    ...history
-  ];
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: msgs, max_tokens: 900, temperature: 0.7 })
-    });
-    const raw = await res.text();
-    console.log("[D-Ai]", res.status, raw.slice(0,400));
-    if (res.status === 401) return "❌ Token tidak valid. Cek konfigurasi HF_TOKEN di Cloudflare Worker kamu.";
-    if (res.status === 403) return "❌ Akses ditolak. Permission token HF harus 'Read'.";
-    if (res.status === 429) return "⚠️ Rate limit. Tunggu sebentar lalu coba lagi.";
-    if (!res.ok) return "❌ Error " + res.status + ": " + raw.slice(0,300);
-    let data; try { data = JSON.parse(raw); } catch { return "❌ Respons tidak valid: " + raw.slice(0,200); }
-    if (data.error) return "❌ " + (typeof data.error==="string" ? data.error : JSON.stringify(data.error));
-    const reply = data.choices?.[0]?.message?.content?.trim() || "Tidak ada respons.";
-    history.push({ role: "assistant", content: reply });
-    return reply;
-  } catch(e) {
-    if (e instanceof TypeError) return "❌ CORS Error: Buka file lewat server, bukan double-click.\n💡 Pakai VS Code + ekstensi Live Server, lalu klik kanan → Open with Live Server.";
-    return "❌ " + e.message;
-  }
-}
-
-// ── SEND ─────────────────────────────────────────────────────────
-const msgInput = document.getElementById("msg-input");
-const sendBtn  = document.getElementById("send-btn");
-
-async function sendMessage() {
-  const text = msgInput.value.trim();
-  if (!text || !username) return;
-  msgInput.value = ""; msgInput.style.height = "auto";
-  addBubble("user", text);
-  showTyping();
-  const aiReply = await askAI(text);
-  removeTyping();
-  addBubble("ai", aiReply);
-  sendToDiscord(text, aiReply);
-}
-
-sendBtn.addEventListener("click", sendMessage);
-msgInput.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-msgInput.addEventListener("input", () => {
-  msgInput.style.height = "auto";
-  msgInput.style.height = Math.min(msgInput.scrollHeight, 140) + "px";
-});
 </script>
 </body>
 </html>
-
