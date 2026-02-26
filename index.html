@@ -336,19 +336,7 @@ body {
   tab-size: 2;
 }
 
-/* ══════════════════════════════════════════
-   STREAMING / TYPEWRITER
-══════════════════════════════════════════ */
-.stream-cursor {
-  display: inline-block;
-  width: 2px; height: 1em;
-  background: var(--text2);
-  border-radius: 1px;
-  vertical-align: text-bottom;
-  animation: blink .7s step-end infinite;
-  margin-left: 1px;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
 
 /* ══════════════════════════════════════════
    TYPING INDICATOR
@@ -772,117 +760,36 @@ function addUserBubble(text) {
   content.textContent = text;
 }
 
+function addAIBubble(text) {
+  const { content } = createBubble("ai");
+  content.innerHTML = renderMarkdown(text);
+}
+
 // ── STREAMING TYPEWRITER ─────────────────────────────────────
-async function streamAI(userMsg) {
-  const history_msgs = buildMessages(userMsg);
-
-  // Create empty AI bubble
-  const { content: contentEl } = createBubble("ai");
-
-  // Cursor
-  const cursor = document.createElement("span");
-  cursor.className = "stream-cursor";
-  contentEl.appendChild(cursor);
-
-  let fullText    = "";
-  let charQueue   = [];
-  let streamDone  = false;
-  let animDone    = false;
-
-  // ─ Character animation pump ─
-  const CHAR_DELAY = 12; // ms per char
-  function pumpChars() {
-    if (charQueue.length === 0) {
-      if (streamDone) {
-        // Stream finished AND queue empty → finalize
-        cursor.remove();
-        contentEl.innerHTML = renderMarkdown(fullText);
-        animDone = true;
-        return;
-      }
-      // Queue empty but stream not done → wait
-      setTimeout(pumpChars, 20);
-      return;
-    }
-    const ch = charQueue.shift();
-    fullText += ch;
-    // Update text node before cursor
-    let textNode = contentEl.firstChild;
-    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-      textNode = document.createTextNode("");
-      contentEl.insertBefore(textNode, cursor);
-    }
-    textNode.textContent = fullText;
-    scrollBottom();
-    setTimeout(pumpChars, CHAR_DELAY);
-  }
-
-  // Start pump
-  pumpChars();
-
-  // ─ Fetch streaming SSE ─
+async function askAI(userMsg) {
+  const msgs = buildMessages(userMsg);
+  showTyping();
   try {
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages:    history_msgs,
-        max_tokens:  900,
-        temperature: 0.7,
-        stream:      true
-      })
+      body: JSON.stringify({ messages: msgs, max_tokens: 900, temperature: 0.7 })
     });
-
-    if (!res.ok) {
-      const err = await res.text();
-      charQueue.push(...("❌ Error " + res.status + ": " + err.slice(0,200)).split(""));
-      streamDone = true;
-      return fullText;
-    }
-
-    const reader  = res.body.getReader();
-    const decoder = new TextDecoder();
-    let   buffer  = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop(); // keep incomplete line
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith("data:")) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === "[DONE]") { streamDone = true; break; }
-        try {
-          const json  = JSON.parse(data);
-          const delta = json.choices?.[0]?.delta?.content || "";
-          if (delta) charQueue.push(...delta.split(""));
-        } catch { /* skip malformed */ }
-      }
-      if (streamDone) break;
-    }
-
+    const raw = await res.text();
+    removeTyping();
+    if (res.status === 401) return "❌ Token tidak valid. Cek konfigurasi HF_TOKEN di Cloudflare Worker kamu.";
+    if (res.status === 403) return "❌ Akses ditolak. Permission token HF harus Read.";
+    if (res.status === 429) return "⚠️ Rate limit. Tunggu sebentar lalu coba lagi.";
+    if (!res.ok)            return "❌ Error " + res.status + ": " + raw.slice(0, 300);
+    let data;
+    try { data = JSON.parse(raw); } catch { return "❌ Respons tidak valid: " + raw.slice(0,200); }
+    if (data.error) return "❌ " + (typeof data.error === "string" ? data.error : JSON.stringify(data.error));
+    return data.choices?.[0]?.message?.content?.trim() || "Tidak ada respons.";
   } catch (e) {
-    const errMsg = e instanceof TypeError
-      ? "❌ CORS Error: Buka via Live Server, bukan double-click file HTML."
-      : "❌ " + e.message;
-    charQueue.push(...errMsg.split(""));
+    removeTyping();
+    if (e instanceof TypeError) return "❌ CORS Error: Buka via Live Server, bukan double-click file HTML.";
+    return "❌ " + e.message;
   }
-
-  streamDone = true;
-
-  // Wait for animation to finish
-  await new Promise(resolve => {
-    const check = setInterval(() => {
-      if (animDone) { clearInterval(check); resolve(); }
-    }, 30);
-  });
-
-  return fullText;
 }
 
 // ── CONVERSATION HISTORY ─────────────────────────────────────
@@ -900,7 +807,7 @@ function buildMessages(userMsg) {
         "Identitasmu: Kamu bernama D-Ai. " +
         "Kamu diintegrasikan dan dipasang ke website ini oleh seseorang bernama Danis. " +
         "Kalau ada yang bertanya siapa yang buat kamu, model apa kamu, dsb — jawab dengan bangga: " +
-        "kamu adalah D-Ai, ditenagai model GLM-5, dan website ini dibangun oleh Danis.\n\n" +
+        "kamu adalah D-Ai, dan website ini dibangun oleh Danis.\n\n" +
         "Format respons dengan Markdown: **bold** untuk poin penting, ## untuk heading, " +
         "list untuk langkah-langkah, dan fenced code block dengan nama bahasa (```python, ```js, dll) " +
         "untuk SEMUA kode. Tulis ringkas dan padat, hindari bertele-tele."
@@ -935,8 +842,9 @@ async function sendMessage() {
 
   addUserBubble(text);
 
-  const aiReply = await streamAI(text);
+  const aiReply = await askAI(text);
   history.push({ role: "assistant", content: aiReply });
+  addAIBubble(aiReply);
 
   setGenerating(false);
   sendToDiscord(text, aiReply);
