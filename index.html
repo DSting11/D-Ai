@@ -620,11 +620,10 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
 // ================================================================
 //  KONFIGURASI — isi sebelum dibagikan
 // ================================================================
-const HF_TOKEN            = "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";
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1476429779279286423/vXcv1FXigQeCE1Aw8vf0aiT4gp47GorDNdnIp2u1JCRKu6y8Bv8Y2LKUq25_kWcDu7nO";
+// Token HF TIDAK ada di sini — tersimpan aman di Cloudflare Worker
+const WORKER_URL          = "https://tight-dawn-e5d0.javas-muchie.workers.dev/";  // ← isi URL worker kamu
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1476429779279286423/vXcv1FXigQeCE1Aw8vf0aiT4gp47GorDNdnIp2u1JCRKu6y8Bv8Y2LKUq25_kWcDu7nO"
 // ================================================================
-
-const HF_MODEL    = "zai-org/GLM-5:fireworks-ai";
 const STORAGE_KEY = "d_ai_username";
 
 // ── USERNAME ─────────────────────────────────────────────────────
@@ -644,8 +643,8 @@ function applyUsername(name, animate) {
   } else {
     nameScreen.classList.add("gone");
   }
-  if (HF_TOKEN.startsWith("hf_XXXXX")) {
-    setTimeout(() => addSysMsg("⚠️ HF_TOKEN belum diisi! Edit file HTML lalu isi token Hugging Face kamu."), 700);
+  if (WORKER_URL.includes("GANTI-DENGAN")) {
+    setTimeout(() => addSysMsg("⚠️ WORKER_URL belum diisi! Isi URL Cloudflare Worker kamu di kode HTML."), 700);
   }
 }
 
@@ -903,14 +902,14 @@ async function askAI(userMsg) {
     ...history
   ];
   try {
-    const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
+    const res = await fetch(WORKER_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + HF_TOKEN },
-      body: JSON.stringify({ model: HF_MODEL, messages: msgs, max_tokens: 900, temperature: 0.7 })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: msgs, max_tokens: 900, temperature: 0.7 })
     });
     const raw = await res.text();
     console.log("[D-Ai]", res.status, raw.slice(0,400));
-    if (res.status === 401) return "❌ Token tidak valid. Cek lagi HF_TOKEN di kode.";
+    if (res.status === 401) return "❌ Token tidak valid. Cek konfigurasi HF_TOKEN di Cloudflare Worker kamu.";
     if (res.status === 403) return "❌ Akses ditolak. Permission token HF harus 'Read'.";
     if (res.status === 429) return "⚠️ Rate limit. Tunggu sebentar lalu coba lagi.";
     if (!res.ok) return "❌ Error " + res.status + ": " + raw.slice(0,300);
@@ -949,6 +948,4 @@ msgInput.addEventListener("input", () => {
 });
 </script>
 </body>
-
 </html>
-
