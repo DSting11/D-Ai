@@ -24,7 +24,6 @@
   --green:      #16a34a;
   --code-bg:    #f7f7f5;
   --radius:     14px;
-  --canvas-w:   500px;
   --sh-sm:      0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --sh-md:      0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
   --sh-lg:      0 12px 40px rgba(0,0,0,.10),0 4px 12px rgba(0,0,0,.06);
@@ -42,7 +41,6 @@ body {
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
-  /* Prevent bounce scroll on iOS */
   position: fixed; width: 100%;
 }
 
@@ -149,15 +147,6 @@ body {
   display: flex; flex-direction: column;
   flex: 1; min-width: 0; background: var(--white);
 }
-
-#canvas-side {
-  width: 0; overflow: hidden;
-  transition: width .38s cubic-bezier(.4,0,.2,1);
-  display: flex; flex-direction: column;
-  background: var(--bg); border-left: 1px solid var(--border);
-  flex-shrink: 0;
-}
-#canvas-side.open { width: var(--canvas-w); }
 
 /* ══════════════════════════════════════════
    TOPBAR
@@ -278,7 +267,7 @@ body {
 .md-body th, .md-body td { border: 1px solid var(--border); padding: 6px 11px; }
 .md-body th { background: var(--surface); font-weight: 600; }
 
-/* inline code — plain, no color */
+/* inline code */
 .md-body code {
   background: var(--code-bg);
   border: 1px solid var(--border);
@@ -290,53 +279,237 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   CODE BLOCK — PLAIN (no syntax colors)
+   FILE CARDS - SEPERTI DI SCREENSHOT
 ══════════════════════════════════════════ */
-.code-block-wrap {
-  margin: .8em 0; border-radius: 11px;
-  overflow: hidden; border: 1px solid var(--border);
-  box-shadow: var(--sh-sm);
+.file-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
 }
-.code-block-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 14px;
+
+.file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.file-card-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.file-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.file-download-btn {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.file-download-btn:hover {
+  background: var(--accent);
+  color: var(--inv);
+  border-color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODAL/CANVAS OVERLAY
+══════════════════════════════════════════ */
+#code-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+#code-modal.open {
+  display: flex;
+}
+
+.code-modal-content {
+  background: var(--white);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--sh-lg);
+}
+
+.code-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
-.code-lang {
-  font-family: 'DM Mono', monospace; font-size: .67rem;
-  color: var(--text2); text-transform: uppercase; letter-spacing: .08em;
-}
-.code-actions { display: flex; gap: 5px; }
-.code-btn {
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 6px; padding: 3px 10px;
-  font-family: 'DM Mono', monospace; font-size: .66rem;
-  color: var(--text2); cursor: pointer;
-  transition: background .12s, border-color .12s;
-}
-.code-btn:hover { background: var(--surface2); border-color: var(--border2); }
-.code-btn.open-canvas { color: var(--blue); border-color: #bfdbfe; }
-.code-btn.open-canvas:hover { background: #eff6ff; }
 
-/* Plain code — no colors, pure monospace */
-.code-block-wrap pre {
-  margin: 0; padding: 14px 16px;
-  overflow-x: auto;
+.code-modal-title {
+  font-family: 'DM Mono', monospace;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.code-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-size: 1rem;
+  transition: all .15s;
+}
+
+.code-modal-close:hover {
+  background: var(--accent);
+  color: var(--inv);
+  border-color: var(--accent);
+}
+
+.code-modal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-modal-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .13s;
+}
+
+.code-modal-tab.active {
+  background: var(--white);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.code-modal-action {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.code-modal-action:hover {
+  background: var(--surface2);
+}
+
+.code-modal-body {
+  flex: 1;
+  overflow: auto;
   background: var(--code-bg);
 }
-.code-block-wrap pre code {
+
+#code-display {
+  margin: 0;
+  padding: 20px 24px;
   font-family: 'DM Mono', monospace;
-  font-size: .8rem; line-height: 1.7;
-  color: var(--text);         /* semua teks sama warna */
-  background: transparent;
-  display: block;
+  font-size: .85rem;
+  line-height: 1.7;
   white-space: pre;
-  word-break: normal;
+  overflow-x: auto;
+  color: var(--text);
   tab-size: 2;
+  min-height: 100%;
 }
 
+#code-preview {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+  background: #fff;
+}
 
+/* comment spans */
+.cc { color: #888; }
 
 /* ══════════════════════════════════════════
    TYPING INDICATOR
@@ -406,78 +579,15 @@ body {
 #send-btn svg { width: 16px; height: 16px; }
 
 /* ══════════════════════════════════════════
-   CANVAS PANEL
-══════════════════════════════════════════ */
-.canvas-topbar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 16px; height: 60px;
-  background: var(--white); border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.canvas-title {
-  flex: 1; font-size: .8rem; font-weight: 500;
-  font-family: 'DM Mono', monospace; color: var(--text2);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.canvas-lang-badge {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; padding: 2px 8px;
-  font-family: 'DM Mono', monospace; font-size: .62rem;
-  color: var(--blue); text-transform: uppercase; letter-spacing: .06em;
-}
-.canvas-close {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: var(--surface); border: 1px solid var(--border);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: var(--text2); font-size: .85rem; flex-shrink: 0; transition: background .14s;
-}
-.canvas-close:hover { background: var(--surface2); color: var(--text); }
-
-.canvas-toolbar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px; border-bottom: 1px solid var(--border);
-  background: var(--bg); flex-shrink: 0;
-}
-.canvas-tabs { display: flex; gap: 4px; }
-.canvas-tab {
-  background: transparent; border: 1px solid transparent;
-  border-radius: 7px; padding: 4px 12px;
-  font-family: 'DM Mono', monospace; font-size: .67rem;
-  color: var(--text3); cursor: pointer; transition: all .13s;
-}
-.canvas-tab.active { background: var(--white); border-color: var(--border); color: var(--text); box-shadow: var(--sh-sm); }
-
-.canvas-tool-btn {
-  display: flex; align-items: center; gap: 5px;
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 7px; padding: 5px 12px;
-  font-family: 'DM Mono', monospace; font-size: .67rem;
-  color: var(--text2); cursor: pointer; transition: background .13s; box-shadow: var(--sh-sm);
-}
-.canvas-tool-btn:hover { background: var(--surface); }
-.canvas-tool-btn svg { width: 11px; height: 11px; }
-.copy-ok { color: var(--green) !important; }
-
-/* Canvas code — plain, no colors */
-#canvas-content { flex: 1; overflow: auto; padding: 20px; }
-#canvas-content::-webkit-scrollbar { width: 4px; }
-#canvas-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-#canvas-pre {
-  margin: 0; font-family: 'DM Mono', monospace;
-  font-size: .8rem; line-height: 1.7;
-  white-space: pre; overflow-x: auto;
-  color: var(--text); background: transparent;
-}
-#canvas-preview { flex: 1; border: none; width: 100%; display: none; background: #fff; }
-
-/* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
-@media (max-width: 860px) {
-  #canvas-side.open { width: 100%; position: fixed; inset: 0; z-index: 200; }
-}
 @media (max-width: 560px) {
   .msg-row { max-width: 94%; }
   .topbar, #chat-area, .input-area { padding-left: 14px; padding-right: 14px; }
+  .code-modal-content {
+    max-height: 95vh;
+    border-radius: 12px;
+  }
 }
 </style>
 </head>
@@ -526,31 +636,31 @@ body {
     </div>
   </div>
 
-  <!-- CANVAS -->
-  <div id="canvas-side">
-    <div class="canvas-topbar">
-      <span class="canvas-title" id="canvas-title">code.js</span>
-      <span class="canvas-lang-badge" id="canvas-lang">JS</span>
-      <button class="canvas-close" id="canvas-close-btn">✕</button>
+</div>
+
+<!-- ═══════════ CODE MODAL/CANVAS ═══════════ -->
+<div id="code-modal">
+  <div class="code-modal-content">
+    <div class="code-modal-header">
+      <span class="code-modal-title" id="modal-filename">code.js</span>
+      <button class="code-modal-close" onclick="closeCodeModal()">✕</button>
     </div>
-    <div class="canvas-toolbar">
-      <div class="canvas-tabs">
-        <button class="canvas-tab active" id="tab-code"    onclick="switchTab('code')">Code</button>
-        <button class="canvas-tab"        id="tab-preview" onclick="switchTab('preview')">Preview</button>
-      </div>
-      <div style="flex:1"></div>
-      <button class="canvas-tool-btn" id="copy-btn" onclick="copyCanvas()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="code-modal-toolbar">
+      <button class="code-modal-tab active" id="modal-tab-code" onclick="switchModalTab('code')">Code</button>
+      <button class="code-modal-tab" id="modal-tab-preview" onclick="switchModalTab('preview')">Preview</button>
+      <button class="code-modal-action" onclick="copyModalCode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/>
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
         </svg>
         Copy
       </button>
     </div>
-    <div id="canvas-content"><pre id="canvas-pre"></pre></div>
-    <iframe id="canvas-preview" sandbox="allow-scripts"></iframe>
+    <div class="code-modal-body">
+      <pre id="code-display"></pre>
+      <iframe id="code-preview" sandbox="allow-scripts"></iframe>
+    </div>
   </div>
-
 </div>
 
 <script>
@@ -628,22 +738,189 @@ function setGenerating(val) {
   sendBtn.disabled  = val;
 }
 
-// ── MARKDOWN RENDERER ────────────────────────────────────────
-window.__codeBlocks = [];
+// ── CODE STORE ──────────────────────────────────────────────
+window.__codeStore = window.__codeStore || {};
+let __codeCounter = 0;
 
+// ── COMMENT COLORIZER ────────────────────────────────────────────
+function colorizeComments(code, lang) {
+  const l = (lang || "").toLowerCase();
+  const lines = code.split("\n");
+
+  let lineComment  = null;
+  let blockStart   = null;
+  let blockEnd     = null;
+
+  if (["javascript","js","typescript","ts","java","c","cpp","go","rust","css","swift","kotlin"].includes(l)) {
+    lineComment = "//"; blockStart = "/*"; blockEnd = "*/";
+  } else if (["python","py","bash","sh","ruby","rb","yaml","yml"].includes(l)) {
+    lineComment = "#";
+  } else if (["html","xml","svg"].includes(l)) {
+    blockStart = "<!--"; blockEnd = "-->";
+  } else if (["sql"].includes(l)) {
+    lineComment = "--"; blockStart = "/*"; blockEnd = "*/";
+  } else {
+    return esc(code);
+  }
+
+  let result = "";
+  let inBlock = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const escaped = esc(raw);
+
+    if (inBlock) {
+      if (blockEnd && raw.includes(blockEnd)) {
+        inBlock = false;
+        result += "<span class=\"cc\">" + escaped + "</span>";
+      } else {
+        result += "<span class=\"cc\">" + escaped + "</span>";
+      }
+    } else if (blockStart && raw.trimStart().startsWith(blockStart)) {
+      inBlock = !blockEnd || !raw.includes(blockEnd);
+      result += "<span class=\"cc\">" + escaped + "</span>";
+    } else if (lineComment && raw.trimStart().startsWith(lineComment)) {
+      result += "<span class=\"cc\">" + escaped + "</span>";
+    } else {
+      if (lineComment) {
+        const idx = findInlineComment(raw, lineComment);
+        if (idx !== -1) {
+          result += esc(raw.slice(0, idx)) + "<span class=\"cc\">" + esc(raw.slice(idx)) + "</span>";
+        } else {
+          result += escaped;
+        }
+      } else {
+        result += escaped;
+      }
+    }
+    if (i < lines.length - 1) result += "\n";
+  }
+  return result;
+}
+
+function esc(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function findInlineComment(line, marker) {
+  let inStr = null;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (!inStr && (ch === '"' || ch === "'" || ch === '`')) { inStr = ch; continue; }
+    if (inStr && ch === inStr && line[i-1] !== "\\") { inStr = null; continue; }
+    if (!inStr && line.slice(i, i + marker.length) === marker) return i;
+  }
+  return -1;
+}
+
+// ── FILE ICONS ──────────────────────────────────────────────
+function getFileIcon(lang) {
+  const l = (lang || "").toLowerCase();
+  if (["javascript","js","typescript","ts"].includes(l)) return "📄";
+  if (["python","py"].includes(l)) return "🐍";
+  if (["html","svg"].includes(l)) return "🌐";
+  if (["css"].includes(l)) return "🎨";
+  if (["java"].includes(l)) return "☕";
+  if (["cpp","c"].includes(l)) return "⚙️";
+  if (["go"].includes(l)) return "🔵";
+  if (["rust","rs"].includes(l)) return "⚡";
+  if (["bash","sh"].includes(l)) return "💻";
+  if (["sql"].includes(l)) return "🗄️";
+  return "📄";
+}
+
+function getFileExt(lang) {
+  const l = (lang || "").toLowerCase();
+  const map = {
+    javascript: "js", js: "js", typescript: "ts", ts: "ts",
+    python: "py", py: "py", html: "html", css: "css",
+    java: "java", cpp: "cpp", c: "c", go: "go",
+    rust: "rs", rs: "rs", bash: "sh", sh: "sh", sql: "sql"
+  };
+  return map[l] || l || "txt";
+}
+
+// ── MARKDOWN RENDERER ────────────────────────────────────────────
 function renderMarkdown(raw) {
-  window.__codeBlocks = [];
   const blocks = [];
   let t = raw;
 
-  // Extract fenced code blocks
-  t = t.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
-    const idx = blocks.length;
-    const l   = lang.trim() || "text";
-    blocks.push({ lang: l, code: code.trimEnd() });
-    window.__codeBlocks.push({ lang: l, code: code.trimEnd() });
-    return `%%CB_${idx}%%`;
-  });
+  // PERBAIKAN: Extract code blocks dengan cara yang lebih robust
+  // Tangkap semua format: ```python, ```python\n, ```\npython, dll
+  const codeBlockRegex = /```([a-zA-Z0-9_+-]*)\s*\n([\s\S]*?)```/g;
+  let match;
+  
+  while ((match = codeBlockRegex.exec(raw)) !== null) {
+    const lang = match[1].trim();
+    const code = match[2];
+    const fullMatch = match[0];
+    const startIndex = match.index;
+    
+    const globalId = "cb_" + (++__codeCounter);
+    const l = lang || "text";
+    const trimmed = code.trimEnd();
+    
+    blocks.push({
+      id: globalId,
+      lang: l,
+      code: trimmed,
+      fullMatch: fullMatch,
+      startIndex: startIndex,
+      endIndex: startIndex + fullMatch.length
+    });
+    
+    window.__codeStore[globalId] = { lang: l, code: trimmed };
+  }
+
+  // Jika tidak ada code block, proses sebagai markdown biasa
+  if (blocks.length === 0) {
+    return processBasicMarkdown(raw);
+  }
+
+  // Bangun hasil dengan mengganti code blocks
+  let result = "";
+  let lastIndex = 0;
+  
+  for (const block of blocks) {
+    // Proses teks sebelum code block
+    const textBefore = raw.slice(lastIndex, block.startIndex);
+    result += processBasicMarkdown(textBefore);
+    
+    // Buat card untuk code block
+    const lines = block.code.split('\n').length;
+    const icon = getFileIcon(block.lang);
+    const ext = getFileExt(block.lang);
+    const filename = "code." + ext;
+    
+    result += '<div class="file-cards-container">' +
+      '<div class="file-card">' +
+        '<div class="file-card-info">' +
+          '<div class="file-icon">' + icon + '</div>' +
+          '<div class="file-details">' +
+            '<div class="file-name">' + filename + '</div>' +
+            '<div class="file-meta">' + block.lang + ' • ' + lines + ' baris</div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="file-download-btn" onclick="openCodeModal(\'' + block.id + '\')">Buka</button>' +
+      '</div>' +
+      '</div>';
+    
+    lastIndex = block.endIndex;
+  }
+  
+  // Proses sisa teks setelah code block terakhir
+  const textAfter = raw.slice(lastIndex);
+  result += processBasicMarkdown(textAfter);
+  
+  return result;
+}
+
+// Fungsi terpisah untuk proses markdown dasar (tanpa code blocks)
+function processBasicMarkdown(text) {
+  if (!text) return "";
+  
+  let t = text;
 
   // Escape HTML
   t = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -677,7 +954,7 @@ function renderMarkdown(raw) {
     return "<ol>" + items + "</ol>\n";
   });
 
-  // Inline code (before link)
+  // Inline code
   t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
 
   // Links
@@ -687,36 +964,11 @@ function renderMarkdown(raw) {
   t = t.split("\n\n").map(block => {
     const tr = block.trim();
     if (!tr) return "";
-    if (/^(<h[123]|<ul|<ol|<blockquote|<hr|%%CB)/.test(tr)) return tr;
+    if (/^(<h[123]|<ul|<ol|<blockquote|<hr)/.test(tr)) return tr;
     return "<p>" + tr.replace(/\n/g,"<br>") + "</p>";
   }).join("\n");
 
-  // Restore code blocks — plain, no syntax colors
-  t = t.replace(/%%CB_(\d+)%%/g, (_, idx) => {
-    const {lang, code} = blocks[idx];
-    // Escape HTML inside code — plain text, no highlighting
-    const esc = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    const ext = {javascript:"js",python:"py",html:"html",css:"css",java:"java",typescript:"ts",cpp:"cpp",bash:"sh",sql:"sql",go:"go",rust:"rs"};
-    const canBtn = `<button class="code-btn open-canvas" onclick="openCanvas(${idx})">⬡ Canvas</button>`;
-    const cpBtn  = `<button class="code-btn" onclick="copyCode(this,'${encodeURIComponent(code)}')">Copy</button>`;
-    return `<div class="code-block-wrap">
-      <div class="code-block-header">
-        <span class="code-lang">${lang}</span>
-        <div class="code-actions">${cpBtn}${canBtn}</div>
-      </div>
-      <pre><code>${esc}</code></pre>
-    </div>`;
-  });
-
   return t;
-}
-
-function copyCode(btn, enc) {
-  navigator.clipboard.writeText(decodeURIComponent(enc)).then(() => {
-    btn.textContent = "✓ Copied";
-    btn.classList.add("copy-ok");
-    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copy-ok"); }, 1800);
-  });
 }
 
 // ── BUBBLES ──────────────────────────────────────────────────
@@ -765,7 +1017,24 @@ function addAIBubble(text) {
   content.innerHTML = renderMarkdown(text);
 }
 
-// ── STREAMING TYPEWRITER ─────────────────────────────────────
+// ── TYPING INDICATOR ─────────────────────────────────────────
+function showTyping() {
+  const row = document.createElement("div");
+  row.className = "msg-row ai"; row.id = "typing-row";
+  const av = document.createElement("div"); av.className = "msg-av";
+  const d = document.createElement("span"); d.className = "d-letter"; d.textContent = "D"; d.style.fontSize = ".75rem";
+  av.appendChild(d);
+  const bub = document.createElement("div"); bub.className = "bubble typing-bubble";
+  bub.innerHTML = "<span></span><span></span><span></span>";
+  row.appendChild(av); row.appendChild(bub);
+  chatArea.appendChild(row); scrollBottom();
+}
+
+function removeTyping() {
+  const el = document.getElementById("typing-row");
+  if (el) el.remove();
+}
+
 async function askAI(userMsg) {
   const msgs = buildMessages(userMsg);
   showTyping();
@@ -804,10 +1073,10 @@ function buildMessages(userMsg) {
         "Kamu adalah D-Ai, AI chat yang cerdas, jujur, dan bebas. " +
         "Nama pengguna yang chat denganmu adalah \"" + (username || "pengguna") + "\". " +
         "Jawab dalam bahasa yang sama dengan pengguna. Tidak ada batasan topik.\n\n" +
-        "Identitasmu: Kamu bernama D-Ai. " +
+        "Identitasmu: Kamu bernama D-Ai. Model AI yang menjalankanmu adalah GLM-5. " +
         "Kamu diintegrasikan dan dipasang ke website ini oleh seseorang bernama Danis. " +
         "Kalau ada yang bertanya siapa yang buat kamu, model apa kamu, dsb — jawab dengan bangga: " +
-        "kamu adalah D-Ai, dan website ini dibangun oleh Danis.\n\n" +
+        "kamu adalah D-Ai, ditenagai model GLM-5, dan website ini dibangun oleh Danis.\n\n" +
         "Format respons dengan Markdown: **bold** untuk poin penting, ## untuk heading, " +
         "list untuk langkah-langkah, dan fenced code block dengan nama bahasa (```python, ```js, dll) " +
         "untuk SEMUA kode. Tulis ringkas dan padat, hindari bertele-tele."
@@ -860,7 +1129,6 @@ msgInput.addEventListener("input", () => {
 });
 
 // ── MOBILE VIEWPORT FIX ─────────────────────────────────────
-// Saat keyboard muncul di mobile, resize layout agar input tetap terlihat
 function fixViewport() {
   const layout = document.getElementById("layout");
   if (window.visualViewport) {
@@ -872,7 +1140,6 @@ function fixViewport() {
     });
     window.visualViewport.addEventListener("scroll", scrollBottom);
   } else {
-    // Fallback: listen to window resize
     window.addEventListener("resize", () => {
       layout.style.height = window.innerHeight + "px";
       scrollBottom();
@@ -881,56 +1148,80 @@ function fixViewport() {
 }
 fixViewport();
 
-// ── CANVAS ───────────────────────────────────────────────────
-const canvasSide    = document.getElementById("canvas-side");
-const canvasTitleEl = document.getElementById("canvas-title");
-const canvasLangEl  = document.getElementById("canvas-lang");
-const canvasPreEl   = document.getElementById("canvas-pre");
-const canvasPreview = document.getElementById("canvas-preview");
-let currentCode = "", currentLang = "";
+// ── CODE MODAL ───────────────────────────────────────────────
+const codeModal = document.getElementById("code-modal");
+const modalFilename = document.getElementById("modal-filename");
+const codeDisplay = document.getElementById("code-display");
+const codePreview = document.getElementById("code-preview");
+let currentModalCode = "";
+let currentModalLang = "";
 
-function openCanvas(idx) {
-  const block = (window.__codeBlocks || [])[idx];
+function openCodeModal(globalId) {
+  const block = window.__codeStore[globalId];
   if (!block) return;
-  currentCode = block.code;
-  currentLang = block.lang;
-
-  const extMap = {javascript:"js",python:"py",html:"html",css:"css",java:"java",typescript:"ts",cpp:"cpp",bash:"sh",sql:"sql",go:"go",rust:"rs"};
-  canvasTitleEl.textContent = "code." + (extMap[block.lang.toLowerCase()] || block.lang || "txt");
-  canvasLangEl.textContent  = (block.lang || "code").toUpperCase();
-
-  // Plain text — no syntax coloring
-  canvasPreEl.textContent = block.code;
-
-  const isPreview = ["html","svg"].includes(block.lang.toLowerCase());
-  document.getElementById("tab-preview").style.display = isPreview ? "" : "none";
-  switchTab("code");
-  canvasSide.classList.add("open");
+  
+  currentModalCode = block.code;
+  currentModalLang = block.lang;
+  
+  const ext = getFileExt(block.lang);
+  modalFilename.textContent = "code." + ext;
+  
+  // Render code with comment coloring
+  codeDisplay.innerHTML = colorizeComments(block.code, block.lang);
+  
+  // Show/hide preview tab for HTML
+  const isPreviewable = ["html","svg"].includes(block.lang.toLowerCase());
+  document.getElementById("modal-tab-preview").style.display = isPreviewable ? "" : "none";
+  
+  switchModalTab("code");
+  codeModal.classList.add("open");
+  document.body.style.overflow = "hidden";
 }
 
-document.getElementById("canvas-close-btn").addEventListener("click", () => canvasSide.classList.remove("open"));
+function closeCodeModal() {
+  codeModal.classList.remove("open");
+  document.body.style.overflow = "";
+  codePreview.srcdoc = "";
+}
 
-function switchTab(tab) {
-  document.getElementById("tab-code").classList.toggle("active",    tab === "code");
-  document.getElementById("tab-preview").classList.toggle("active", tab === "preview");
+function switchModalTab(tab) {
+  document.getElementById("modal-tab-code").classList.toggle("active", tab === "code");
+  document.getElementById("modal-tab-preview").classList.toggle("active", tab === "preview");
+  
   if (tab === "code") {
-    document.getElementById("canvas-content").style.display = "";
-    canvasPreview.style.display = "none";
+    codeDisplay.style.display = "";
+    codePreview.style.display = "none";
   } else {
-    document.getElementById("canvas-content").style.display = "none";
-    canvasPreview.style.display = "";
-    canvasPreview.srcdoc = currentCode;
+    codeDisplay.style.display = "none";
+    codePreview.style.display = "";
+    codePreview.srcdoc = currentModalCode;
   }
 }
 
-function copyCanvas() {
-  navigator.clipboard.writeText(currentCode).then(() => {
-    const btn = document.getElementById("copy-btn");
-    btn.innerHTML = btn.innerHTML.replace("Copy","✓ Copied");
-    btn.classList.add("copy-ok");
-    setTimeout(() => { btn.innerHTML = btn.innerHTML.replace("✓ Copied","Copy"); btn.classList.remove("copy-ok"); }, 1800);
+function copyModalCode() {
+  navigator.clipboard.writeText(currentModalCode).then(() => {
+    const btn = document.querySelector(".code-modal-action");
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tersalin!';
+    btn.style.color = "var(--green)";
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.style.color = "";
+    }, 2000);
   });
 }
+
+// Close modal on backdrop click
+codeModal.addEventListener("click", (e) => {
+  if (e.target === codeModal) closeCodeModal();
+});
+
+// Close on Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && codeModal.classList.contains("open")) {
+    closeCodeModal();
+  }
+});
 </script>
 </body>
 </html>
